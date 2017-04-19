@@ -23,4 +23,8 @@ enum plugauth_client_auth_t {
   PLUGAUTH_ERROR        = 600
 };
 
+void plugauth_client_init();
+int plugauth_client_version();
+const char *plugauth_client_version_string();
+
 #endif
