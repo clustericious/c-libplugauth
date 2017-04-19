@@ -1,0 +1,11 @@
+prefix=PLUGAUTH_PREFIX
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libplugauth
+URL: https://metacpan.org/pod/PlugAuth
+Description: Library for cluster authentication
+Version: 0.01
+Libs: -L${libdir} -lplugauth
+Cflags: -I${includedir} 
