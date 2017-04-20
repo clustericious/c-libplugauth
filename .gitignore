@@ -2,3 +2,5 @@
 *.so
 *.a
 /libplugauth-client
+/libplugauth-*.tar.gz
+/libplugauth.spec

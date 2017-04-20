@@ -7,7 +7,10 @@ LDFLAGS=-shared
 OBJECTS=client.o auth.o version.o
 PREFIX=/usr/local
 RANLIB=ranlib
-PLUGAUTH_VERSION=001
+PLUGAUTH_MAJOR=0
+PLUGAUTH_MINOR=01
+PLUGAUTH_VERSION=$(PLUGAUTH_MAJOR)$(PLUGAUTH_MINOR)
+DIST_SOURCE=`git ls-files | grep -v ^.gitignore`
 
 all : libplugauth.so libplugauth.a libplugauth-client
 
@@ -34,10 +37,22 @@ install : libplugauth.so libplugauth.pc.tmpl
 	install -m 0644 plugauth.h $(DESTDIR)$(PREFIX)/include/plugauth.h
 	perl -pe 's/PLUGAUTH_PREFIX/$$ENV{PREFIX}/g' libplugauth.pc.tmpl > $(DESTDIR)$(PREFIX)/lib/pkgconfig/libplugauth.pc
 
-clean distclean:
-	rm -f *.o *.so *.a libplugauth-client
-	rm -rf destdir
+libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz :
+	mkdir -p libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR)
+	cp -a $(DIST_SOURCE) libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR)
+	bsdtar zcvf libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR)
+	rm -rf libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR)
 
-rpm: all
-	rm -rf ./destdir
-	$(MAKE) install PREFIX=/util DESTDIR=./destdir
+dist : libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz
+
+libplugauth.spec : libplugauth.spec.tmpl
+	env PLUGAUTH_VERSION=$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR) PLUGAUTH_RELEASE=$$((`arpm -qa | grep libplugauth | cut -d- -f3 | cut -d. -f1` + 1)) perl -pe 's/(PLUGAUTH_(?:VERSION|RELEASE))/$$ENV{$$1}/eg' libplugauth.spec.tmpl > libplugauth.spec
+
+rpm : libplugauth.spec libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz
+	mkdir -p ~/rpmbuild/SOURCES
+	cp -a libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz ~/rpmbuild/SOURCES
+	rpmbuild -bb libplugauth.spec
+
+clean distclean:
+	rm -f *.o *.so *.a libplugauth-client libplugauth.spec *.tar.gz
+	rm -rf destdir

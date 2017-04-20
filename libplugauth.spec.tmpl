@@ -1,0 +1,31 @@
+Name: libplugauth
+Version: PLUGAUTH_VERSION
+Release: PLUGAUTH_RELEASE
+Summary: PlugAuth C library.
+
+Group: Applications/CPAN
+License: BSD
+URL: https://github.com/plicease/libplugauth
+Source0: libplugauth-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-BUILD
+
+%description
+PlugAuth C library.
+
+%define myfilelist %{_tmppath}/filelist-%(%{__id_u} -n)
+
+%prep
+%setup -q -n libplugauth-%{version}
+
+%build
+make
+
+%install
+make install PREFIX=/util DESTDIR=$RPM_BUILD_ROOT
+find %{buildroot} -not -type d | sed -e 's#%{buildroot}##' > %{myfilelist}
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files -f %{myfilelist}
+%defattr(-,root,root,-)
