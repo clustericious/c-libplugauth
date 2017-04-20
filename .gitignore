@@ -3,4 +3,4 @@
 *.a
 /libplugauth-client
 /libplugauth-*.tar.gz
-/libplugauth.spec
+/acps-libplugauth.spec

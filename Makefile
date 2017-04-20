@@ -45,14 +45,14 @@ libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz :
 
 dist : libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz
 
-libplugauth.spec : libplugauth.spec.tmpl
-	env PLUGAUTH_VERSION=$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR) PLUGAUTH_RELEASE=$$((`arpm -qa | grep libplugauth | cut -d- -f3 | cut -d. -f1` + 1)) perl -pe 's/(PLUGAUTH_(?:VERSION|RELEASE))/$$ENV{$$1}/eg' libplugauth.spec.tmpl > libplugauth.spec
+acps-libplugauth.spec : acps-libplugauth.spec.tmpl
+	env PLUGAUTH_VERSION=$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR) PLUGAUTH_RELEASE=$$((`arpm -qa | grep libplugauth | cut -d- -f3 | cut -d. -f1` + 1)) perl -pe 's/(PLUGAUTH_(?:VERSION|RELEASE))/$$ENV{$$1}/eg' acps-libplugauth.spec.tmpl > acps-libplugauth.spec
 
-rpm : libplugauth.spec libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz
+rpm : acps-libplugauth.spec libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz
 	mkdir -p ~/rpmbuild/SOURCES
 	cp -a libplugauth-$(PLUGAUTH_MAJOR).$(PLUGAUTH_MINOR).tar.gz ~/rpmbuild/SOURCES
-	rpmbuild -bb libplugauth.spec
+	rpmbuild -bb acps-libplugauth.spec
 
 clean distclean:
-	rm -f *.o *.so *.a libplugauth-client libplugauth.spec *.tar.gz
+	rm -f *.o *.so *.a libplugauth-client acps-libplugauth.spec *.tar.gz
 	rm -rf destdir
